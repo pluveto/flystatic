@@ -1,29 +1,43 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
-	"example.com/m/cmd/greet/app"
-	"example.com/m/pkg/logger"
 	"github.com/BurntSushi/toml"
 	"github.com/alexflint/go-arg"
+	"github.com/pluveto/flystatic/cmd/flystatic/app"
+	"github.com/pluveto/flystatic/cmd/flystatic/conf"
+	"github.com/pluveto/flystatic/pkg/logger"
+	"github.com/sirupsen/logrus"
 )
 
 // main Entry point of the application
 func main() {
 	// main Entry point of the application
 	var args app.Args
-	var conf app.Conf
-	var defaultConf = app.GetDefaultConf()
+	var cnf conf.Conf
+	var defaultConf = conf.GetDefaultConf()
 
 	args = loadArgsValid()
-	conf = loadConfValid(args.Config, defaultConf, "config.toml")
-
-	app.InitLogger(conf.Log, args.Verbose)
+	cnf = loadConfValid(args.Config, defaultConf, "config.toml")
+	overrideConf(&cnf, args)
+	app.InitLogger(cnf.Log, args.Verbose)
 	logger.Debug("log level: ", logger.GetLevel())
+	app.Run(cnf)
+}
 
-	app.Run(args, conf)
+func overrideConf(cnf *conf.Conf, args app.Args) {
+	if args.Verbose {
+		cnf.Log.Level = logrus.DebugLevel.String()
+	}
+	if args.Port != 0 {
+		cnf.Server.Port = args.Port
+	}
+	if args.Host != "" {
+		cnf.Server.Host = args.Host
+	}
 }
 
 func loadArgsValid() app.Args {
@@ -40,7 +54,7 @@ func getAppDir() string {
 	return filepath.Dir(dir)
 }
 
-func loadConfValid(path string, defaultConf app.Conf, defaultConfPath string) app.Conf {
+func loadConfValid(path string, defaultConf conf.Conf, defaultConfPath string) conf.Conf {
 	if path == "" {
 		path = defaultConfPath
 	}
@@ -51,7 +65,7 @@ func loadConfValid(path string, defaultConf app.Conf, defaultConfPath string) ap
 	}
 	_, err := toml.DecodeFile(path, &defaultConf)
 	if err != nil {
-		logger.Warn("failed to load config file: ", err, " using default config")
+		fmt.Println("failed to load config file: (" + err.Error() + ") using default config")
 	}
 	logger.WithField("conf", &defaultConf).Debug("configuration loaded")
 	return defaultConf

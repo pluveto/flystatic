@@ -1,8 +1,46 @@
+[server]
+host = "0.0.0.0"
+port = 7086
+path = ""
+fs_dir = "C:\\Repo\\flystatic"
+speed_limit = 1000_000 # default speed limit for all users, bytes per second
+show_directory = true
+
+[auth]
+
+    [[auth.user]]
+    username = "admin"
+    password_hash = "$2a$12$qhWveZ.LLaBLJDvf/yRieOwo0eC2VqG0oE9qsDH/wJZXE6SxLhHpi"
+    speed_limit = 100_000 # bytes per second
+    password_crypt = "bcrypt"
+    sub_fs_dir = "/"
+    sub_path = "/"
+
+    # add more users here
+    # note: the above line is required by auto install script, do not delete.
+
 [log]
 level = "Warning"
-
     [[log.file]]
     format = "json"
-    path = "greet.log"
+    path = "/var/log/flystatic.log"
     max_size = 1 # megabytes
     max_age = 28 # days
+
+    [[log.stdout]]
+    format = "text" # or "text"
+    output = "stdout" # or "stderr"
+
+[cors]
+enabled = true
+allowed_origins = ["*"]
+allowed_methods = ["GET", "OPTIONS", "HEAD"]
+allowed_headers = ["*"]
+exposed_headers = ["*"]
+allow_credentials = true
+max_age = 86400 # seconds
+
+[ssl]
+enabled = false
+cert = "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+key = "/etc/ssl/private/ssl-cert-snakeoil.key"

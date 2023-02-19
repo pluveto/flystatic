@@ -9,13 +9,12 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/greet/main.go",
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/cmd/flystatic/main.go",
             "args": [
                 "-v",
-                "Zhang San",
-                "Lao Wang",
                 "-c",
-                "${workspaceFolder}/conf/config.example.toml"
+                "fddf${workspaceFolder}/conf/config.default.toml"
             ]
         }
     ]

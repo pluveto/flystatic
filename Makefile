@@ -1,5 +1,5 @@
-PROJECT_NAME=greet-app
-BIN_NAMES=greet
+PROJECT_NAME=flystatic-app
+BIN_NAMES=flystatic
 GOARCHS=amd64 386 arm arm64
 GOARCHS_MAC=amd64 arm64
 
@@ -17,7 +17,7 @@ windows: prepare
 		[ -z "$$BIN_NAME" ] && continue; \
 		for GOARCH in $(GOARCHS); do \
 			mkdir -p dist/windows_$$GOARCH; \
-			OOSG=windows GOARCH=$$GOARCH go build -o dist/windows_$$GOARCH/$$BIN_NAME.exe cmd/$$BIN_NAME/main.go; \
+			GOOS=windows GOARCH=$$GOARCH go build -o dist/windows_$$GOARCH/$$BIN_NAME.exe cmd/$$BIN_NAME/main.go; \
 		done \
 	done
 
@@ -58,9 +58,8 @@ package: all
 test:
 	go test -v ./...
 
-# Usage: make run APP=greet -- -h
 run:
-	go run cmd/$(APP)/main.go
+	go run cmd/$(APP)/main.go $(ARGS)
 
 clean:
 	rm -rfd dist
